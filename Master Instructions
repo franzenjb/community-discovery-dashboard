@@ -1,0 +1,427 @@
+# Community Discovery Dashboard - Technical Documentation
+
+## Project Overview
+
+**Purpose:** Track and visualize community partnership activities submitted via Survey123, enriched with Red Cross geographic hierarchy (Division → Region → Chapter → County).
+
+**Created:** February 1, 2026  
+**Author:** Dragon (Jeff Franzen)
+
+---
+
+## Architecture
+
+```
+Survey123 Form
+     ↓
+Community_Discovery_Visualization (private layer - raw submissions)
+     ↓
+AGOL Notebook (Cell 2 - scheduled daily)
+  • Spatial join with Chapter layer → Division/Region/Chapter
+  • Spatial join with County layer → County/State  
+  • Aggregates counts by geography
+     ↓
+Community_Discovery_Summary (public table - aggregated counts only)
+     ↓
+Dashboard (Vercel) + Experience Builder
+```
+
+---
+
+## Key URLs
+
+| Resource | URL |
+|----------|-----|
+| **Survey123 Source Layer** | https://services.arcgis.com/pGfbNJoYypmNq86F/arcgis/rest/services/Community_Discovery_Visualization/FeatureServer/0 |
+| **Summary Table (Public)** | https://services.arcgis.com/pGfbNJoYypmNq86F/arcgis/rest/services/Community_Discovery_Summary/FeatureServer/0 |
+| **Chapter Geography** | https://services.arcgis.com/pGfbNJoYypmNq86F/arcgis/rest/services/Master_ARC_Geography_2022/FeatureServer/3 |
+| **County Geography** | https://services.arcgis.com/pGfbNJoYypmNq86F/arcgis/rest/services/Master_ARC_Geography_2022/FeatureServer/5 |
+| **Vercel Dashboard** | https://community-discovery-dashboard.vercel.app |
+| **GitHub Repo** | https://github.com/franzenjb/community-discovery-dashboard |
+
+---
+
+## Survey123 Field Schema
+
+| Display Name | Field Name | Type |
+|--------------|------------|------|
+| Who was this activity with? | `who_was_this_activity_with` | String |
+| When did this happen? | `when_did_this_happen` | Date |
+| Why did this connection matter? | `why_did_this_connection_matter` | String |
+| Name your activity | `name_your_activity` | String |
+| Briefly describe what you did | `briefly_describe_what_you_did` | String |
+| What kind of community connection did you make? | `field_27` | String (List of 12) |
+| Custom activity | `field_27_other` | String |
+
+### Activity Types (field_27 domain)
+1. Invite a partner for coffee
+2. Introduce yourself to a new community group
+3. Attend a partner event
+4. Share what partnership means to you
+5. Host a shared community potluck
+6. Hold a lunch-and-learn with partners
+7. Volunteer at a partner organization
+8. Meet with another Line of Service
+9. Create a wall of partner stories
+10. Connect a partner with a resource
+11. Attend a listening session
+12. Custom activity
+
+---
+
+## Summary Table Schema
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `geo_type` | String(50) | "Division", "Region", "Chapter", or "County" |
+| `geo_name` | String(255) | Name of the geography |
+| `parent_name` | String(255) | Parent geography name |
+| `activity_count` | Integer | Count of activities |
+| `last_updated` | Date | Timestamp of last update |
+
+---
+
+## AGOL Notebook Cells
+
+### Cell 1: Dummy Data Generator (DELETE AFTER TESTING)
+
+**Purpose:** Creates 50 fake test submissions for development/testing.
+
+**When to use:** Only during initial development or to test the pipeline.
+
+**IMPORTANT:** Delete this cell or comment it out before production!
+
+```python
+from arcgis.gis import GIS
+from arcgis.features import FeatureLayer
+from arcgis.geometry import Point, project
+import random
+from datetime import datetime, timedelta
+
+gis = GIS("home")
+print(f"Connected as: {gis.users.me.username}")
+
+layer = FeatureLayer("https://services.arcgis.com/pGfbNJoYypmNq86F/arcgis/rest/services/Community_Discovery_Visualization/FeatureServer/0")
+
+# Delete existing dummy data
+print("Deleting existing data...")
+existing = layer.query(where="1=1", return_geometry=False, out_fields="*")
+if existing.features:
+    oid_field = [k for k in existing.features[0].attributes.keys() if 'objectid' in k.lower()][0]
+    oids = [f.attributes[oid_field] for f in existing.features]
+    layer.edit_features(deletes=oids)
+    print(f"Deleted {len(oids)} existing records")
+
+# Activity types from field_27 domain (List of 12)
+ACTIVITY_TYPES = [
+    "Invite a partner for coffee",
+    "Introduce yourself to a new community group", 
+    "Attend a partner event",
+    "Share what partnership means to you",
+    "Host a shared community potluck",
+    "Hold a lunch-and-learn with partners",
+    "Volunteer at a partner organization",
+    "Meet with another Line of Service",
+    "Create a wall of partner stories",
+    "Connect a partner with a resource",
+    "Attend a listening session",
+    "Custom activity"
+]
+
+PARTNERS = ["United Way", "Salvation Army", "Habitat for Humanity", "YMCA", "Boys & Girls Club", "Local Food Bank", "Community Health Center", "Senior Center", "Public Library", "Rotary Club", "Lions Club", "Chamber of Commerce", "City Emergency Management", "County Fire Department", "School District"]
+
+WHY_MATTERS = [
+    "Building trust with a key community partner.",
+    "First step in establishing a new relationship.",
+    "Strengthened our collaboration for future disasters.",
+    "Learned about their community needs.",
+    "Opened doors for future volunteer opportunities.",
+    "Connected them with resources they needed."
+]
+
+ACTIVITY_NAMES = [
+    "Coffee chat with local nonprofit",
+    "Community outreach meeting", 
+    "Partner appreciation event",
+    "Disaster prep workshop",
+    "Volunteer coordination session",
+    "Resource sharing discussion"
+]
+
+DESCRIPTIONS = [
+    "Had a great conversation about upcoming collaboration opportunities.",
+    "Discussed ways to better serve our shared community.",
+    "Explored partnership possibilities for disaster response.",
+    "Connected on volunteer recruitment strategies.",
+    "Shared information about Red Cross services.",
+    "Built rapport with key community leader."
+]
+
+# Locations in WGS84 (lat, lon)
+LOCATIONS = [
+    (27.77, -82.64, "St. Petersburg", "FL"),
+    (25.76, -80.19, "Miami", "FL"),
+    (28.54, -81.38, "Orlando", "FL"),
+    (33.75, -84.39, "Atlanta", "GA"),
+    (35.23, -80.84, "Charlotte", "NC"),
+    (40.71, -74.01, "New York", "NY"),
+    (39.95, -75.17, "Philadelphia", "PA"),
+    (38.91, -77.04, "Washington", "DC"),
+    (42.36, -71.06, "Boston", "MA"),
+    (41.88, -87.63, "Chicago", "IL"),
+    (39.74, -104.99, "Denver", "CO"),
+    (44.98, -93.27, "Minneapolis", "MN"),
+    (34.05, -118.24, "Los Angeles", "CA"),
+    (37.77, -122.42, "San Francisco", "CA"),
+    (47.61, -122.33, "Seattle", "WA"),
+    (29.76, -95.37, "Houston", "TX"),
+    (32.78, -96.80, "Dallas", "TX"),
+    (30.27, -97.74, "Austin", "TX"),
+]
+
+print(f"\nCreating 50 discoveries...")
+features = []
+for i in range(50):
+    lat, lon, city, state = random.choice(LOCATIONS)
+    lat += random.uniform(-0.03, 0.03)
+    lon += random.uniform(-0.03, 0.03)
+    activity_date = datetime.now() - timedelta(days=random.randint(0, 30))
+    
+    # Project to Web Mercator for storage
+    point_4326 = Point({"x": lon, "y": lat, "spatialReference": {"wkid": 4326}})
+    point_3857 = project([point_4326], in_sr=4326, out_sr=3857)[0]
+    
+    activity_type = random.choice(ACTIVITY_TYPES)
+    
+    features.append({
+        "geometry": {"x": point_3857['x'], "y": point_3857['y'], "spatialReference": {"wkid": 3857}},
+        "attributes": {
+            "who_was_this_activity_with": f"{random.choice(PARTNERS)} - {city}",
+            "when_did_this_happen": int(activity_date.timestamp() * 1000),
+            "why_did_this_connection_matter": random.choice(WHY_MATTERS),
+            "name_your_activity": random.choice(ACTIVITY_NAMES),
+            "briefly_describe_what_you_did": random.choice(DESCRIPTIONS),
+            "field_27": activity_type,
+            "field_27_other": "Community garden project" if activity_type == "Custom activity" else None
+        }
+    })
+    print(f"  {i+1}. {city}, {state} - {activity_type[:30]}...")
+
+result = layer.edit_features(adds=features)
+print(f"\n✅ Added {sum(1 for r in result['addResults'] if r['success'])} discoveries!")
+```
+
+---
+
+### Cell 2: Summary Builder (PRODUCTION - SCHEDULE THIS)
+
+**Purpose:** Performs spatial joins and updates summary table.
+
+**Schedule:** Daily at 6:00 AM (or as needed)
+
+**What it does:**
+1. Fetches all activities from source layer
+2. Spatial joins with Chapter layer (gets Division/Region/Chapter)
+3. Spatial joins with County layer (gets County/State)
+4. Aggregates counts by geography type
+5. Truncates and rebuilds summary table
+
+```python
+from arcgis.gis import GIS
+from arcgis.features import FeatureLayer
+from datetime import datetime
+
+gis = GIS("home")
+print(f"Connected as: {gis.users.me.username}")
+
+activities_layer = FeatureLayer("https://services.arcgis.com/pGfbNJoYypmNq86F/arcgis/rest/services/Community_Discovery_Visualization/FeatureServer/0")
+chapter_layer = FeatureLayer("https://services.arcgis.com/pGfbNJoYypmNq86F/arcgis/rest/services/Master_ARC_Geography_2022/FeatureServer/3")
+county_layer = FeatureLayer("https://services.arcgis.com/pGfbNJoYypmNq86F/arcgis/rest/services/Master_ARC_Geography_2022/FeatureServer/5")
+summary_layer = FeatureLayer("https://services.arcgis.com/pGfbNJoYypmNq86F/arcgis/rest/services/Community_Discovery_Summary/FeatureServer/0")
+
+print("[1/5] Fetching data...")
+activities_sdf = activities_layer.query(where="1=1", out_fields="*", return_geometry=True, out_sr=4326).sdf
+print(f"Activities: {len(activities_sdf)}")
+
+chapters_sdf = chapter_layer.query(where="1=1", out_fields="Chapter,Region,Division", return_geometry=True, out_sr=4326).sdf
+print(f"Chapters: {len(chapters_sdf)}")
+
+counties_sdf = county_layer.query(where="1=1", out_fields="County,State", return_geometry=True, out_sr=4326).sdf
+print(f"Counties: {len(counties_sdf)}")
+
+print("[2/5] Spatial join with Chapters...")
+joined_chapters = activities_sdf.spatial.join(chapters_sdf, how="left", op="within")
+print(f"Joined chapters: {len(joined_chapters)}")
+
+# Drop index columns before second join
+cols_to_drop = [c for c in joined_chapters.columns if 'index_' in c.lower()]
+if cols_to_drop:
+    joined_chapters = joined_chapters.drop(columns=cols_to_drop)
+    print(f"Dropped columns: {cols_to_drop}")
+
+print("[3/5] Spatial join with Counties...")
+joined_all = joined_chapters.spatial.join(counties_sdf, how="left", op="within")
+print(f"Joined all: {len(joined_all)}")
+
+print("\nSample results:")
+print(joined_all[['Chapter', 'Region', 'Division', 'County', 'State']].head(10))
+
+print("\n[4/5] Generating summaries...")
+summaries = []
+now_ms = int(datetime.utcnow().timestamp() * 1000)
+
+div_counts = joined_all.groupby('Division').size().to_dict()
+for name, count in div_counts.items():
+    if name and str(name) != 'nan': 
+        summaries.append({'attributes': {'geo_type': 'Division', 'geo_name': str(name), 'parent_name': '', 'activity_count': int(count), 'last_updated': now_ms}})
+
+reg_data = joined_all.groupby(['Region', 'Division']).size().reset_index(name='count')
+for _, row in reg_data.iterrows():
+    if row['Region'] and str(row['Region']) != 'nan': 
+        summaries.append({'attributes': {'geo_type': 'Region', 'geo_name': str(row['Region']), 'parent_name': str(row['Division'] or ''), 'activity_count': int(row['count']), 'last_updated': now_ms}})
+
+chap_data = joined_all.groupby(['Chapter', 'Region']).size().reset_index(name='count')
+for _, row in chap_data.iterrows():
+    if row['Chapter'] and str(row['Chapter']) != 'nan': 
+        summaries.append({'attributes': {'geo_type': 'Chapter', 'geo_name': str(row['Chapter']), 'parent_name': str(row['Region'] or ''), 'activity_count': int(row['count']), 'last_updated': now_ms}})
+
+county_data = joined_all.groupby(['County', 'State', 'Chapter']).size().reset_index(name='count')
+for _, row in county_data.iterrows():
+    if row['County'] and str(row['County']) != 'nan': 
+        summaries.append({'attributes': {'geo_type': 'County', 'geo_name': str(row['County']), 'parent_name': f"{row['State'] or ''} | {row['Chapter'] or ''}", 'activity_count': int(row['count']), 'last_updated': now_ms}})
+
+print(f"Generated {len(summaries)} summary records")
+
+print("\n[5/5] Updating summary table...")
+existing = summary_layer.query(where="1=1", return_geometry=False, out_fields="*")
+if existing.features:
+    oid_field = [k for k in existing.features[0].attributes.keys() if 'objectid' in k.lower()][0]
+    oids = [f.attributes[oid_field] for f in existing.features]
+    summary_layer.edit_features(deletes=oids)
+    print(f"Deleted {len(oids)} old records")
+
+result = summary_layer.edit_features(adds=summaries)
+print(f"✅ DONE! Added {sum(1 for r in result['addResults'] if r['success'])} records.")
+```
+
+---
+
+### Utility: Delete Dummy Data
+
+**Purpose:** Remove test data before production launch.
+
+**Use when:** Ready to go live with real Survey123 submissions.
+
+```python
+from arcgis.gis import GIS
+from arcgis.features import FeatureLayer
+
+gis = GIS("home")
+layer = FeatureLayer("https://services.arcgis.com/pGfbNJoYypmNq86F/arcgis/rest/services/Community_Discovery_Visualization/FeatureServer/0")
+
+# Delete all records where Creator is your username (dummy data)
+existing = layer.query(where="Creator = 'ARC_Jeff.Franzen_825009'", return_geometry=False, out_fields="*")
+if existing.features:
+    oid_field = [k for k in existing.features[0].attributes.keys() if 'objectid' in k.lower()][0]
+    oids = [f.attributes[oid_field] for f in existing.features]
+    layer.edit_features(deletes=oids)
+    print(f"✅ Deleted {len(oids)} dummy records")
+else:
+    print("No dummy records found")
+```
+
+---
+
+## Technical Lessons Learned
+
+### 1. Spatial Reference Mismatch
+**Problem:** REST API spatial queries always returned Ohio chapter regardless of point location.
+
+**Root Cause:** Master_ARC_Geography_2022 uses Web Mercator (EPSG:3857), but we were querying with WGS84 (EPSG:4326) coordinates.
+
+**Solution:** Use `sdf.spatial.join()` with `out_sr=4326` on all queries to ensure matching spatial references.
+
+### 2. Index Column Conflicts
+**Problem:** Second spatial join failed with "index_left and index_right cannot be names in the frames being joined".
+
+**Solution:** Drop index columns between joins:
+```python
+cols_to_drop = [c for c in joined_chapters.columns if 'index_' in c.lower()]
+if cols_to_drop:
+    joined_chapters = joined_chapters.drop(columns=cols_to_drop)
+```
+
+### 3. Authentication Strategy
+**Problem:** Experience Builder embed widget can't authenticate to private layers.
+
+**Solution:** 
+- Keep source layer (Community_Discovery_Visualization) private
+- Create public summary table with aggregated counts only (non-sensitive)
+- Dashboard reads from public table, no auth required
+
+### 4. AGOL Notebooks
+**Advantage:** `GIS("home")` eliminates all token management complexity. No OAuth setup needed.
+
+---
+
+## Scheduling the Notebook
+
+1. Open the notebook in ArcGIS Online
+2. Click **Tasks** in the top menu
+3. Click **Create Task**
+4. Select **Cell 2 only** (the summary builder)
+5. Set schedule: **Daily at 6:00 AM** (or as needed)
+6. Click **Save**
+
+---
+
+## Dashboard Deployment (Vercel)
+
+**GitHub Repo:** https://github.com/franzenjb/community-discovery-dashboard
+
+**Files:**
+- `index.html` - Passport-themed dashboard (21KB)
+- `vercel.json` - Deployment config
+
+**Auto-deploy:** Push to GitHub → Vercel auto-deploys
+
+**Dashboard Features:**
+- Big number cards: Total Discoveries, Divisions, Regions, Chapters
+- Tabbed interface: Division/Region/Chapter/County views
+- Progress bars showing activity distribution
+- Auto-refresh every 5 minutes
+- Reads from public summary table (no auth)
+
+---
+
+## Data Flow Summary
+
+1. **Survey123** → User submits activity with location
+2. **Community_Discovery_Visualization** → Raw submission stored (private)
+3. **AGOL Notebook (scheduled)** → 
+   - Spatial join with Chapters → Division/Region/Chapter
+   - Spatial join with Counties → County/State
+   - Aggregate counts
+   - Write to summary table
+4. **Community_Discovery_Summary** → Aggregated counts (public)
+5. **Dashboard** → Reads public table, displays visualizations
+
+---
+
+## Quick Reference
+
+| Task | Action |
+|------|--------|
+| Add test data | Run Cell 1 |
+| Update summaries | Run Cell 2 |
+| Delete dummy data | Run utility script |
+| Check dashboard | https://community-discovery-dashboard.vercel.app |
+| Schedule updates | Tasks → Create Task → Cell 2 → Daily |
+
+---
+
+## Contact
+
+**Dragon (Jeff Franzen)**  
+GIS Developer, American Red Cross  
+ARC_Jeff.Franzen_825009
