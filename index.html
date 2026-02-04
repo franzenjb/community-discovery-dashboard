@@ -85,7 +85,7 @@
            ============================================ */
         .metrics-row {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(5, 1fr);
             gap: 16px;
             padding: 24px 30px;
             background: var(--bg-secondary);
@@ -357,6 +357,12 @@
         /* ============================================
            Responsive Design
            ============================================ */
+        @media (max-width: 900px) {
+            .metrics-row {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
         @media (max-width: 768px) {
             body {
                 padding: 12px;
@@ -394,6 +400,12 @@
                 padding: 10px 12px;
             }
         }
+
+        @media (max-width: 480px) {
+            .metrics-row {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -409,6 +421,10 @@
             <div class="metric-card primary">
                 <div class="number" id="totalActivities">-</div>
                 <div class="label">Activities</div>
+            </div>
+            <div class="metric-card">
+                <div class="number" id="totalIndividuals">-</div>
+                <div class="label">Individuals</div>
             </div>
             <div class="metric-card">
                 <div class="number" id="totalDivisions">-</div>
@@ -580,9 +596,14 @@
             const divisions = DATA.filter(d => d.geo_type === 'Division');
             const regions = DATA.filter(d => d.geo_type === 'Region');
             const chapters = DATA.filter(d => d.geo_type === 'Chapter');
-            const total = divisions.reduce((sum, d) => sum + (d.activity_count || 0), 0);
+            const totalRecord = DATA.find(d => d.geo_type === 'Total');
 
-            document.getElementById('totalActivities').textContent = total.toLocaleString();
+            // Get totals from the Total record if available, otherwise sum divisions
+            const totalActivities = totalRecord?.activity_count || divisions.reduce((sum, d) => sum + (d.activity_count || 0), 0);
+            const totalIndividuals = totalRecord?.individual_count || 0;
+
+            document.getElementById('totalActivities').textContent = totalActivities.toLocaleString();
+            document.getElementById('totalIndividuals').textContent = totalIndividuals.toLocaleString();
             document.getElementById('totalDivisions').textContent = divisions.length;
             document.getElementById('totalRegions').textContent = regions.length;
             document.getElementById('totalChapters').textContent = chapters.length;
