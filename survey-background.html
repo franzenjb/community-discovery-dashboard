@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Survey123 Background</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            width: 1200px;
+            height: 1800px;
+            background: linear-gradient(180deg,
+                #004B79 0%,
+                #0066a4 15%,
+                #C4DFF6 40%,
+                #e8f4fc 60%,
+                #f0f7fb 80%,
+                #f8fbfd 100%
+            );
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Subtle network/connection pattern */
+        .pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.08;
+            background-image:
+                radial-gradient(circle at 20% 20%, #004B79 1px, transparent 1px),
+                radial-gradient(circle at 80% 40%, #004B79 1px, transparent 1px),
+                radial-gradient(circle at 40% 60%, #004B79 1px, transparent 1px),
+                radial-gradient(circle at 60% 80%, #004B79 1px, transparent 1px),
+                radial-gradient(circle at 10% 70%, #004B79 1px, transparent 1px),
+                radial-gradient(circle at 90% 10%, #004B79 1px, transparent 1px);
+            background-size: 100px 100px;
+        }
+
+        /* Subtle curved shapes */
+        .curve1 {
+            position: absolute;
+            top: -200px;
+            right: -300px;
+            width: 800px;
+            height: 800px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .curve2 {
+            position: absolute;
+            bottom: -400px;
+            left: -200px;
+            width: 1000px;
+            height: 1000px;
+            border-radius: 50%;
+            background: rgba(0, 75, 121, 0.03);
+        }
+
+        /* Top accent bar */
+        .top-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, #004B79, #56A0D3, #004B79);
+        }
+
+        /* Subtle connection lines */
+        .connections {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 400px;
+            opacity: 0.05;
+        }
+
+        .connections svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Bottom fade to white for form readability */
+        .bottom-fade {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60%;
+            background: linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0.8) 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar"></div>
+    <div class="curve1"></div>
+    <div class="curve2"></div>
+    <div class="pattern"></div>
+
+    <div class="connections">
+        <svg viewBox="0 0 1200 400">
+            <!-- Subtle connection lines representing community -->
+            <line x1="100" y1="100" x2="300" y2="150" stroke="#004B79" stroke-width="1"/>
+            <line x1="300" y1="150" x2="500" y2="80" stroke="#004B79" stroke-width="1"/>
+            <line x1="500" y1="80" x2="700" y2="200" stroke="#004B79" stroke-width="1"/>
+            <line x1="700" y1="200" x2="900" y2="120" stroke="#004B79" stroke-width="1"/>
+            <line x1="900" y1="120" x2="1100" y2="180" stroke="#004B79" stroke-width="1"/>
+            <line x1="200" y1="250" x2="400" y2="200" stroke="#004B79" stroke-width="1"/>
+            <line x1="400" y1="200" x2="600" y2="280" stroke="#004B79" stroke-width="1"/>
+            <line x1="600" y1="280" x2="800" y2="220" stroke="#004B79" stroke-width="1"/>
+            <line x1="800" y1="220" x2="1000" y2="300" stroke="#004B79" stroke-width="1"/>
+
+            <!-- Connection dots -->
+            <circle cx="100" cy="100" r="4" fill="#004B79"/>
+            <circle cx="300" cy="150" r="4" fill="#004B79"/>
+            <circle cx="500" cy="80" r="4" fill="#004B79"/>
+            <circle cx="700" cy="200" r="4" fill="#004B79"/>
+            <circle cx="900" cy="120" r="4" fill="#004B79"/>
+            <circle cx="1100" cy="180" r="4" fill="#004B79"/>
+            <circle cx="200" cy="250" r="4" fill="#004B79"/>
+            <circle cx="400" cy="200" r="4" fill="#004B79"/>
+            <circle cx="600" cy="280" r="4" fill="#004B79"/>
+            <circle cx="800" cy="220" r="4" fill="#004B79"/>
+            <circle cx="1000" cy="300" r="4" fill="#004B79"/>
+        </svg>
+    </div>
+
+    <div class="bottom-fade"></div>
+</body>
+</html>
