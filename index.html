@@ -348,6 +348,44 @@
         }
 
         /* ============================================
+           Word Cloud
+           ============================================ */
+        .wordcloud-section {
+            padding: 20px 30px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--arc-gray-light);
+        }
+
+        .wordcloud-header {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .wordcloud-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 12px;
+            justify-content: center;
+            align-items: baseline;
+            min-height: 80px;
+            padding: 10px;
+        }
+
+        .wordcloud-word {
+            display: inline-block;
+            transition: transform 0.2s ease;
+            cursor: default;
+        }
+
+        .wordcloud-word:hover {
+            transform: scale(1.1);
+        }
+
+        /* ============================================
            Responsive Design
            ============================================ */
         @media (max-width: 900px) {
@@ -430,6 +468,14 @@
             <div class="metric-card">
                 <div class="number" id="totalChapters">-</div>
                 <div class="label">Chapters</div>
+            </div>
+        </div>
+
+        <!-- Word Cloud -->
+        <div class="wordcloud-section">
+            <div class="wordcloud-header">What People Are Doing</div>
+            <div class="wordcloud-container" id="wordcloud">
+                <span style="color: var(--text-secondary);">Loading...</span>
             </div>
         </div>
 
@@ -588,6 +634,7 @@
                 }
 
                 updateMetrics();
+                renderWordCloud();
                 renderTable(currentView);
 
                 const lastUpdate = DATA[0]?.last_updated;
@@ -626,6 +673,35 @@
             document.getElementById('totalDivisions').textContent = divisions.length;
             document.getElementById('totalRegions').textContent = regions.length;
             document.getElementById('totalChapters').textContent = chapters.length;
+        }
+
+        function renderWordCloud() {
+            const words = DATA.filter(d => d.geo_type === 'WordCloud')
+                .sort((a, b) => (b.activity_count || 0) - (a.activity_count || 0));
+
+            const container = document.getElementById('wordcloud');
+
+            if (words.length === 0) {
+                container.innerHTML = '<span style="color: var(--text-secondary);">No word data available</span>';
+                return;
+            }
+
+            const maxCount = Math.max(...words.map(w => w.activity_count || 1));
+            const minCount = Math.min(...words.map(w => w.activity_count || 1));
+
+            // Color palette - blues and teals
+            const colors = ['#004B79', '#0066a4', '#0091CD', '#56A0D3', '#2E8B8B', '#3AA5A5', '#5CACAC'];
+
+            container.innerHTML = words.map(word => {
+                const count = word.activity_count || 1;
+                // Scale font size between 14px and 36px based on frequency
+                const scale = (count - minCount) / (maxCount - minCount || 1);
+                const fontSize = 14 + (scale * 22);
+                const fontWeight = scale > 0.5 ? 700 : 400;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+
+                return '<span class="wordcloud-word" style="font-size:' + fontSize + 'px;font-weight:' + fontWeight + ';color:' + color + ';" title="' + count + ' mentions">' + (word.geo_name || '') + '</span>';
+            }).join(' ');
         }
 
         function renderTable(type) {
