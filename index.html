@@ -3,148 +3,648 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Journey of Discovery | American Red Cross</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <title>Community Mobilization | American Red Cross</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* ============================================
+           Color System - Blues and Whites
+           ============================================ */
+        :root {
+            --arc-white: #FFFFFF;
+            --arc-red: #ED1B2E;
+            --arc-blue-midnight: #004B79;
+            --arc-blue-sky: #56A0D3;
+            --arc-blue-light: #C4DFF6;
+            --arc-blue-classic: #0091CD;
+            --arc-gray-dark: #6D6E70;
+            --arc-gray-med: #9F9FA3;
+            --arc-gray-light: #D7D7D8;
+            --arc-black: #000000;
+
+            --text-primary: var(--arc-gray-dark);
+            --text-secondary: var(--arc-gray-med);
+            --bg-primary: var(--arc-white);
+            --bg-secondary: #F8FAFB;
+        }
+
+        /* ============================================
+           Base Styles
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Crimson Text', Georgia, serif;
-            background: radial-gradient(ellipse at 20% 20%, rgba(201, 168, 108, 0.15) 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, rgba(139, 115, 85, 0.1) 0%, transparent 50%), linear-gradient(180deg, #f4e4c1 0%, #e8d4a8 30%, #dcc69a 70%, #d4bc8a 100%);
+            font-family: Arial, Helvetica, sans-serif;
+            background: linear-gradient(180deg, var(--arc-blue-light) 0%, var(--bg-secondary) 15%, var(--bg-primary) 100%);
             min-height: 100vh;
             padding: 20px;
-            color: #4a3c2a;
+            color: var(--text-primary);
+            line-height: 1.5;
         }
-        .container { max-width: 1100px; margin: 0 auto; background: linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.2) 100%); border-radius: 12px; border: 3px solid #8b7355; box-shadow: 0 15px 50px rgba(74, 60, 42, 0.3), inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -1px 0 rgba(139,115,85,0.2); padding: 30px; position: relative; overflow: hidden; }
-        .header { text-align: center; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 2px solid #c9a86c; }
-        .header h1 { font-family: 'Playfair Display', serif; font-size: 2.4rem; font-weight: 700; color: #5c4a32; letter-spacing: 3px; margin-bottom: 8px; }
-        .header .subtitle { font-style: italic; color: #7a6548; font-size: 1.05rem; }
-        .metrics-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 25px; }
-        .metric-card { background: linear-gradient(145deg, rgba(255,255,255,0.7), rgba(255,255,255,0.3)); border-radius: 10px; padding: 22px 15px; text-align: center; border: 2px solid #c9a86c; box-shadow: 4px 4px 12px rgba(74, 60, 42, 0.15); position: relative; }
-        .metric-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #8b7355, #c9a86c, #8b7355); border-radius: 10px 10px 0 0; }
-        .metric-card .number { font-family: 'Playfair Display', serif; font-size: 2.8rem; font-weight: 700; color: #6b4423; line-height: 1; }
-        .metric-card .label { font-size: 0.75rem; color: #7a6548; margin-top: 8px; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; }
-        .metric-card.primary .number { color: #c41e3a; }
-        .tabs { display: flex; gap: 6px; margin-bottom: 20px; background: rgba(139, 115, 85, 0.08); padding: 6px; border-radius: 10px; border: 1px solid rgba(201, 168, 108, 0.5); }
-        .tab { flex: 1; padding: 12px 20px; background: transparent; border: 1px solid transparent; color: #7a6548; cursor: pointer; border-radius: 8px; font-family: 'Crimson Text', serif; font-size: 1rem; font-weight: 600; }
-        .tab.active { background: linear-gradient(145deg, #8b7355, #6b5a45); color: #f4e4c1; border-color: #5c4a32; }
-        .table-container { background: rgba(255,255,255,0.5); border-radius: 10px; overflow: hidden; border: 2px solid #c9a86c; }
-        .table-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 22px; background: linear-gradient(145deg, #8b7355, #7a6548); }
-        .table-header h2 { font-family: 'Playfair Display', serif; font-size: 1.15rem; color: #f4e4c1; }
-        .table-header .badge { background: rgba(255,255,255,0.2); color: #f4e4c1; padding: 5px 14px; border-radius: 20px; font-size: 0.8rem; }
-        .table-wrapper { max-height: 380px; overflow-y: auto; }
-        table { width: 100%; border-collapse: collapse; }
-        thead th { background: rgba(139, 115, 85, 0.12); padding: 14px 18px; text-align: left; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; color: #5c4a32; border-bottom: 2px solid #c9a86c; position: sticky; top: 0; }
-        tbody tr { border-bottom: 1px solid rgba(139, 115, 85, 0.15); }
-        tbody tr:nth-child(even) { background: rgba(139, 115, 85, 0.04); }
-        tbody tr:hover { background: rgba(201, 168, 108, 0.15); }
-        tbody td { padding: 14px 18px; font-size: 0.95rem; color: #4a3c2a; }
-        tbody td:first-child { font-weight: 600; }
-        .parent-cell { color: #7a6548; font-size: 0.9rem; }
-        .count-badge { display: inline-block; background: linear-gradient(145deg, #c41e3a, #a01830); color: #fff; padding: 5px 14px; border-radius: 15px; font-weight: 700; font-size: 0.9rem; font-family: 'Playfair Display', serif; min-width: 40px; text-align: center; }
-        .progress-bar { height: 8px; background: rgba(139, 115, 85, 0.15); border-radius: 4px; overflow: hidden; min-width: 100px; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, #c41e3a, #e85a5a); border-radius: 4px; }
-        .footer { text-align: center; padding: 18px; color: #7a6548; font-style: italic; font-size: 0.85rem; border-top: 1px solid rgba(201, 168, 108, 0.5); margin-top: 20px; }
-        .loading, .error { text-align: center; padding: 50px; color: #7a6548; }
-        .loading::after { content: ''; display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(139,115,85,0.2); border-top-color: #8b7355; border-radius: 50%; animation: spin 0.8s linear infinite; margin-left: 10px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .error { color: #a01830; }
-        .table-view { display: none; }
-        .table-view.active { display: block; }
-        @media (max-width: 768px) { .metrics-row { grid-template-columns: repeat(2, 1fr); } .metric-card .number { font-size: 2.2rem; } .header h1 { font-size: 1.8rem; } .tabs { flex-wrap: wrap; } .tab { flex: 1 1 45%; } }
+
+        /* ============================================
+           Layout Container
+           ============================================ */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: var(--bg-primary);
+            border-radius: 8px;
+            box-shadow: 0 4px 24px rgba(0, 75, 121, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        /* ============================================
+           Header
+           ============================================ */
+        .header {
+            text-align: center;
+            padding: 28px 30px 24px;
+            border-bottom: 1px solid var(--arc-gray-light);
+            background: var(--bg-primary);
+        }
+
+        .header h1 {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--arc-blue-midnight);
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .header .subtitle {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* ============================================
+           Metrics Row
+           ============================================ */
+        .metrics-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            padding: 24px 30px;
+            background: var(--bg-secondary);
+        }
+
+        .metric-card {
+            background: var(--bg-primary);
+            border-radius: 8px;
+            padding: 20px 16px;
+            text-align: center;
+            border: 1px solid var(--arc-gray-light);
+            box-shadow: 0 2px 8px rgba(0, 75, 121, 0.06);
+            position: relative;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--arc-blue-sky);
+            border-radius: 8px 8px 0 0;
+        }
+
+        .metric-card .number {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--arc-blue-midnight);
+            line-height: 1;
+        }
+
+        .metric-card .label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }
+
+        /* Primary metric with red accent */
+        .metric-card.primary::before {
+            background: var(--arc-red);
+        }
+
+        .metric-card.primary .number {
+            color: var(--arc-red);
+        }
+
+        /* ============================================
+           Tabs
+           ============================================ */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin: 0 30px;
+            padding: 6px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            border: 1px solid var(--arc-gray-light);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 10px 16px;
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 6px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .tab:hover {
+            color: var(--text-primary);
+            background: var(--bg-primary);
+        }
+
+        .tab.active {
+            background: var(--arc-blue-midnight);
+            color: var(--arc-white);
+            border-color: var(--arc-blue-midnight);
+        }
+
+        /* ============================================
+           Table Container
+           ============================================ */
+        .table-view {
+            display: none;
+            padding: 20px 30px 30px;
+        }
+
+        .table-view.active {
+            display: block;
+        }
+
+        .table-container {
+            background: var(--bg-primary);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--arc-gray-light);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 20px;
+            background: var(--arc-blue-midnight);
+        }
+
+        .table-header h2 {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--arc-white);
+        }
+
+        .table-header .badge {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--arc-white);
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* ============================================
+           Table Styles
+           ============================================ */
+        .table-wrapper {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: var(--bg-secondary);
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--arc-gray-light);
+            position: sticky;
+            top: 0;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid rgba(215, 215, 216, 0.5);
+        }
+
+        tbody tr:nth-child(even) {
+            background: rgba(196, 223, 246, 0.1);
+        }
+
+        tbody tr:hover {
+            background: rgba(86, 160, 211, 0.08);
+        }
+
+        tbody td {
+            padding: 12px 16px;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+        }
+
+        tbody td:first-child {
+            font-weight: 600;
+        }
+
+        .parent-cell {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        /* ============================================
+           Count Badge
+           ============================================ */
+        .count-badge {
+            display: inline-block;
+            background: var(--arc-blue-sky);
+            color: var(--arc-white);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            font-family: Arial, Helvetica, sans-serif;
+            min-width: 36px;
+            text-align: center;
+        }
+
+        /* ============================================
+           Progress Bar
+           ============================================ */
+        .progress-bar {
+            height: 6px;
+            background: var(--arc-gray-light);
+            border-radius: 3px;
+            overflow: hidden;
+            min-width: 100px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--arc-blue-sky), var(--arc-blue-classic));
+            border-radius: 3px;
+        }
+
+        /* ============================================
+           Footer
+           ============================================ */
+        .footer {
+            text-align: center;
+            padding: 16px 30px;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--arc-gray-light);
+            background: var(--bg-secondary);
+        }
+
+        .footer span {
+            color: var(--arc-red);
+            font-weight: 600;
+        }
+
+        /* ============================================
+           Loading & Error States
+           ============================================ */
+        .loading,
+        .error {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--arc-gray-light);
+            border-top-color: var(--arc-blue-sky);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error {
+            color: var(--arc-red);
+        }
+
+        /* ============================================
+           Responsive Design
+           ============================================ */
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+
+            .metrics-row {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+                padding: 16px 20px;
+            }
+
+            .metric-card .number {
+                font-size: 2rem;
+            }
+
+            .header h1 {
+                font-size: 1.4rem;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+                margin: 0 20px;
+            }
+
+            .tab {
+                flex: 1 1 45%;
+            }
+
+            .table-view {
+                padding: 16px 20px 24px;
+            }
+
+            thead th,
+            tbody td {
+                padding: 10px 12px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Header Content -->
         <div class="header">
-            <h1>Journey of Discovery</h1>
-            <div class="subtitle" id="status">Charting our community connections...</div>
+            <h1>Community Mobilization</h1>
+            <div class="subtitle" id="status">Connecting communities across the nation...</div>
         </div>
+
+        <!-- Metrics Row -->
         <div class="metrics-row">
-            <div class="metric-card primary"><div class="number" id="totalActivities">-</div><div class="label">Discoveries</div></div>
-            <div class="metric-card"><div class="number" id="totalDivisions">-</div><div class="label">Divisions</div></div>
-            <div class="metric-card"><div class="number" id="totalRegions">-</div><div class="label">Regions</div></div>
-            <div class="metric-card"><div class="number" id="totalChapters">-</div><div class="label">Chapters</div></div>
+            <div class="metric-card primary">
+                <div class="number" id="totalActivities">-</div>
+                <div class="label">Activities</div>
+            </div>
+            <div class="metric-card">
+                <div class="number" id="totalDivisions">-</div>
+                <div class="label">Divisions</div>
+            </div>
+            <div class="metric-card">
+                <div class="number" id="totalRegions">-</div>
+                <div class="label">Regions</div>
+            </div>
+            <div class="metric-card">
+                <div class="number" id="totalChapters">-</div>
+                <div class="label">Chapters</div>
+            </div>
         </div>
+
+        <!-- Navigation Tabs -->
         <div class="tabs">
             <button class="tab active" data-view="division">Division</button>
             <button class="tab" data-view="region">Region</button>
             <button class="tab" data-view="chapter">Chapter</button>
             <button class="tab" data-view="county">County</button>
         </div>
+
+        <!-- Division View -->
         <div class="table-view active" id="division-view">
-            <div class="table-container"><div class="table-header"><h2>Expeditions by Division</h2><span class="badge" id="division-count">0 territories</span></div>
-            <div class="table-wrapper"><table><thead><tr><th>Division</th><th style="text-align:center;width:100px;">Connections</th><th style="width:25%;">Progress</th></tr></thead><tbody id="division-tbody"><tr><td colspan="3" class="loading">Mapping territories</td></tr></tbody></table></div></div>
+            <div class="table-container">
+                <div class="table-header">
+                    <h2>Activities by Division</h2>
+                    <span class="badge" id="division-count">0 divisions</span>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Division</th>
+                                <th style="text-align:center;width:100px;">Count</th>
+                                <th style="width:25%;">Distribution</th>
+                            </tr>
+                        </thead>
+                        <tbody id="division-tbody">
+                            <tr><td colspan="3" class="loading">Loading data</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
+
+        <!-- Region View -->
         <div class="table-view" id="region-view">
-            <div class="table-container"><div class="table-header"><h2>Expeditions by Region</h2><span class="badge" id="region-count">0 regions</span></div>
-            <div class="table-wrapper"><table><thead><tr><th>Region</th><th>Division</th><th style="text-align:center;width:100px;">Connections</th></tr></thead><tbody id="region-tbody"><tr><td colspan="3" class="loading">Mapping territories</td></tr></tbody></table></div></div>
+            <div class="table-container">
+                <div class="table-header">
+                    <h2>Activities by Region</h2>
+                    <span class="badge" id="region-count">0 regions</span>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Region</th>
+                                <th>Division</th>
+                                <th style="text-align:center;width:100px;">Count</th>
+                            </tr>
+                        </thead>
+                        <tbody id="region-tbody">
+                            <tr><td colspan="3" class="loading">Loading data</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
+
+        <!-- Chapter View -->
         <div class="table-view" id="chapter-view">
-            <div class="table-container"><div class="table-header"><h2>Expeditions by Chapter</h2><span class="badge" id="chapter-count">0 chapters</span></div>
-            <div class="table-wrapper"><table><thead><tr><th>Chapter</th><th>Region</th><th style="text-align:center;width:100px;">Connections</th></tr></thead><tbody id="chapter-tbody"><tr><td colspan="3" class="loading">Mapping territories</td></tr></tbody></table></div></div>
+            <div class="table-container">
+                <div class="table-header">
+                    <h2>Activities by Chapter</h2>
+                    <span class="badge" id="chapter-count">0 chapters</span>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Chapter</th>
+                                <th>Region</th>
+                                <th style="text-align:center;width:100px;">Count</th>
+                            </tr>
+                        </thead>
+                        <tbody id="chapter-tbody">
+                            <tr><td colspan="3" class="loading">Loading data</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
+
+        <!-- County View -->
         <div class="table-view" id="county-view">
-            <div class="table-container"><div class="table-header"><h2>Expeditions by County</h2><span class="badge" id="county-count">0 counties</span></div>
-            <div class="table-wrapper"><table><thead><tr><th>County</th><th>Location</th><th style="text-align:center;width:100px;">Connections</th></tr></thead><tbody id="county-tbody"><tr><td colspan="3" class="loading">Mapping territories</td></tr></tbody></table></div></div>
+            <div class="table-container">
+                <div class="table-header">
+                    <h2>Activities by County</h2>
+                    <span class="badge" id="county-count">0 counties</span>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>County</th>
+                                <th>Location</th>
+                                <th style="text-align:center;width:100px;">Count</th>
+                            </tr>
+                        </thead>
+                        <tbody id="county-tbody">
+                            <tr><td colspan="3" class="loading">Loading data</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-        <div class="footer">Adventure awaits - American Red Cross Community Mobilization</div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <span>American Red Cross</span> Community Mobilization
+        </div>
     </div>
+
     <script>
         const SUMMARY_URL = 'https://services.arcgis.com/pGfbNJoYypmNq86F/arcgis/rest/services/Community_Discovery_Summary/FeatureServer/0/query';
         let DATA = [];
         let currentView = 'division';
+
         async function loadData() {
             try {
                 const response = await fetch(SUMMARY_URL + '?where=1%3D1&outFields=*&f=json');
                 const json = await response.json();
+
                 if (json.error) throw new Error(json.error.message || 'API Error');
+
                 DATA = (json.features || []).map(f => f.attributes);
-                if (DATA.length === 0) { document.getElementById('status').textContent = 'No expeditions recorded yet'; return; }
+
+                if (DATA.length === 0) {
+                    document.getElementById('status').textContent = 'No activities recorded yet';
+                    return;
+                }
+
                 updateMetrics();
                 renderTable(currentView);
+
                 const lastUpdate = DATA[0]?.last_updated;
-                document.getElementById('status').textContent = lastUpdate ? 'Last charted: ' + new Date(lastUpdate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }) : 'Data loaded';
+                document.getElementById('status').textContent = lastUpdate
+                    ? 'Last updated: ' + new Date(lastUpdate).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
+                        hour: 'numeric',
+                        minute: '2-digit'
+                    })
+                    : 'Data loaded';
+
             } catch (error) {
                 console.error('Error:', error);
-                document.getElementById('status').textContent = 'Connection lost...';
-                document.querySelectorAll('tbody').forEach(tbody => { tbody.innerHTML = '<tr><td colspan="3" class="error">Unable to load data: ' + error.message + '</td></tr>'; });
+                document.getElementById('status').textContent = 'Unable to connect...';
+                document.querySelectorAll('tbody').forEach(tbody => {
+                    tbody.innerHTML = '<tr><td colspan="3" class="error">Unable to load data: ' + error.message + '</td></tr>';
+                });
             }
         }
+
         function updateMetrics() {
             const divisions = DATA.filter(d => d.geo_type === 'Division');
             const regions = DATA.filter(d => d.geo_type === 'Region');
             const chapters = DATA.filter(d => d.geo_type === 'Chapter');
             const total = divisions.reduce((sum, d) => sum + (d.activity_count || 0), 0);
+
             document.getElementById('totalActivities').textContent = total.toLocaleString();
             document.getElementById('totalDivisions').textContent = divisions.length;
             document.getElementById('totalRegions').textContent = regions.length;
             document.getElementById('totalChapters').textContent = chapters.length;
         }
+
         function renderTable(type) {
-            const filtered = DATA.filter(d => d.geo_type === type.charAt(0).toUpperCase() + type.slice(1)).sort((a, b) => (b.activity_count || 0) - (a.activity_count || 0));
+            const filtered = DATA.filter(d => d.geo_type === type.charAt(0).toUpperCase() + type.slice(1))
+                .sort((a, b) => (b.activity_count || 0) - (a.activity_count || 0));
+
             const tbody = document.getElementById(type + '-tbody');
             const countEl = document.getElementById(type + '-count');
             const maxCount = Math.max(...filtered.map(d => d.activity_count || 0), 1);
-            if (filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="3" class="error">No ' + type + ' data available</td></tr>'; countEl.textContent = '0 ' + type + 's'; return; }
-            const labels = { division: 'territories', region: 'regions', chapter: 'chapters', county: 'counties' };
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" class="error">No ' + type + ' data available</td></tr>';
+                countEl.textContent = '0 ' + type + 's';
+                return;
+            }
+
+            const labels = {
+                division: 'divisions',
+                region: 'regions',
+                chapter: 'chapters',
+                county: 'counties'
+            };
             countEl.textContent = filtered.length + ' ' + labels[type];
+
             if (type === 'division') {
-                tbody.innerHTML = filtered.map(row => '<tr><td>' + (row.geo_name || 'Unknown') + '</td><td style="text-align:center;"><span class="count-badge">' + (row.activity_count || 0) + '</span></td><td><div class="progress-bar"><div class="progress-fill" style="width:' + ((row.activity_count || 0) / maxCount * 100) + '%"></div></div></td></tr>').join('');
+                tbody.innerHTML = filtered.map(row =>
+                    '<tr>' +
+                    '<td>' + (row.geo_name || 'Unknown') + '</td>' +
+                    '<td style="text-align:center;"><span class="count-badge">' + (row.activity_count || 0) + '</span></td>' +
+                    '<td><div class="progress-bar"><div class="progress-fill" style="width:' + ((row.activity_count || 0) / maxCount * 100) + '%"></div></div></td>' +
+                    '</tr>'
+                ).join('');
             } else {
-                tbody.innerHTML = filtered.map(row => '<tr><td>' + (row.geo_name || 'Unknown') + '</td><td class="parent-cell">' + (row.parent_name || '-') + '</td><td style="text-align:center;"><span class="count-badge">' + (row.activity_count || 0) + '</span></td></tr>').join('');
+                tbody.innerHTML = filtered.map(row =>
+                    '<tr>' +
+                    '<td>' + (row.geo_name || 'Unknown') + '</td>' +
+                    '<td class="parent-cell">' + (row.parent_name || '-') + '</td>' +
+                    '<td style="text-align:center;"><span class="count-badge">' + (row.activity_count || 0) + '</span></td>' +
+                    '</tr>'
+                ).join('');
             }
         }
+
+        // Tab click handlers
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', () => {
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
+
                 currentView = tab.dataset.view;
+
                 document.querySelectorAll('.table-view').forEach(v => v.classList.remove('active'));
                 document.getElementById(currentView + '-view').classList.add('active');
+
                 renderTable(currentView);
             });
         });
+
+        // Initial load and refresh interval
         loadData();
         setInterval(loadData, 5 * 60 * 1000);
     </script>
