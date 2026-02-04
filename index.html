@@ -439,6 +439,7 @@
             <button class="tab" data-view="region">Region</button>
             <button class="tab" data-view="chapter">Chapter</button>
             <button class="tab" data-view="county">County</button>
+            <button class="tab" data-view="individual">Individual</button>
         </div>
 
         <!-- Division View -->
@@ -537,6 +538,30 @@
             </div>
         </div>
 
+        <!-- Individual View -->
+        <div class="table-view" id="individual-view">
+            <div class="table-container">
+                <div class="table-header">
+                    <h2>Activities by Individual</h2>
+                    <span class="badge" id="individual-count">0 individuals</span>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Individual</th>
+                                <th style="text-align:center;width:100px;">Count</th>
+                                <th style="width:25%;">Distribution</th>
+                            </tr>
+                        </thead>
+                        <tbody id="individual-tbody">
+                            <tr><td colspan="3" class="loading">Loading data</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
         <!-- Footer -->
         <div class="footer">
             <span>American Red Cross</span> Community Mobilization
@@ -621,11 +646,12 @@
                 division: 'divisions',
                 region: 'regions',
                 chapter: 'chapters',
-                county: 'counties'
+                county: 'counties',
+                individual: 'individuals'
             };
             countEl.textContent = filtered.length + ' ' + labels[type];
 
-            if (type === 'division') {
+            if (type === 'division' || type === 'individual') {
                 tbody.innerHTML = filtered.map(row =>
                     '<tr>' +
                     '<td>' + (row.geo_name || 'Unknown') + '</td>' +
