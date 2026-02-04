@@ -129,14 +129,7 @@
             font-weight: 600;
         }
 
-        /* Primary metric with red accent */
-        .metric-card.primary::before {
-            background: var(--arc-red);
-        }
-
-        .metric-card.primary .number {
-            color: var(--arc-red);
-        }
+        /* All metrics use blue (no red accent) */
 
         /* ============================================
            Tabs
@@ -418,7 +411,7 @@
 
         <!-- Metrics Row -->
         <div class="metrics-row">
-            <div class="metric-card primary">
+            <div class="metric-card">
                 <div class="number" id="totalActivities">-</div>
                 <div class="label">Activities</div>
             </div>
@@ -600,7 +593,8 @@
 
             // Get totals from the Total record if available, otherwise sum divisions
             const totalActivities = totalRecord?.activity_count || divisions.reduce((sum, d) => sum + (d.activity_count || 0), 0);
-            const totalIndividuals = totalRecord?.individual_count || 0;
+            // Handle both 'individual_count' and 'Individual_count' (AGOL field naming)
+            const totalIndividuals = totalRecord?.individual_count || totalRecord?.Individual_count || 0;
 
             document.getElementById('totalActivities').textContent = totalActivities.toLocaleString();
             document.getElementById('totalIndividuals').textContent = totalIndividuals.toLocaleString();
