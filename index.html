@@ -85,7 +85,7 @@
            ============================================ */
         .metrics-row {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(6, 1fr);
             gap: 16px;
             padding: 24px 30px;
             background: var(--bg-secondary);
@@ -388,7 +388,7 @@
         /* ============================================
            Responsive Design
            ============================================ */
-        @media (max-width: 900px) {
+        @media (max-width: 1000px) {
             .metrics-row {
                 grid-template-columns: repeat(3, 1fr);
             }
@@ -458,16 +458,20 @@
                 <div class="label">Individuals</div>
             </div>
             <div class="metric-card">
-                <div class="number" id="totalDivisions">-</div>
-                <div class="label">Divisions</div>
+                <div class="number" id="totalCounties">-</div>
+                <div class="label">Counties</div>
+            </div>
+            <div class="metric-card">
+                <div class="number" id="totalChapters">-</div>
+                <div class="label">Chapters</div>
             </div>
             <div class="metric-card">
                 <div class="number" id="totalRegions">-</div>
                 <div class="label">Regions</div>
             </div>
             <div class="metric-card">
-                <div class="number" id="totalChapters">-</div>
-                <div class="label">Chapters</div>
+                <div class="number" id="totalDivisions">-</div>
+                <div class="label">Divisions</div>
             </div>
         </div>
 
@@ -481,15 +485,15 @@
 
         <!-- Navigation Tabs -->
         <div class="tabs">
-            <button class="tab active" data-view="division">Division</button>
-            <button class="tab" data-view="region">Region</button>
-            <button class="tab" data-view="chapter">Chapter</button>
+            <button class="tab active" data-view="individual">Individual</button>
             <button class="tab" data-view="county">County</button>
-            <button class="tab" data-view="individual">Individual</button>
+            <button class="tab" data-view="chapter">Chapter</button>
+            <button class="tab" data-view="region">Region</button>
+            <button class="tab" data-view="division">Division</button>
         </div>
 
         <!-- Division View -->
-        <div class="table-view active" id="division-view">
+        <div class="table-view" id="division-view">
             <div class="table-container">
                 <div class="table-header">
                     <h2>Activities by Division</h2>
@@ -585,7 +589,7 @@
         </div>
 
         <!-- Individual View -->
-        <div class="table-view" id="individual-view">
+        <div class="table-view active" id="individual-view">
             <div class="table-container">
                 <div class="table-header">
                     <h2>Activities by Individual</h2>
@@ -617,7 +621,7 @@
     <script>
         const SUMMARY_URL = 'https://services.arcgis.com/pGfbNJoYypmNq86F/arcgis/rest/services/Community_Discovery_Summary/FeatureServer/0/query';
         let DATA = [];
-        let currentView = 'division';
+        let currentView = 'individual';
 
         async function loadData() {
             try {
@@ -661,6 +665,7 @@
             const divisions = DATA.filter(d => d.geo_type === 'Division');
             const regions = DATA.filter(d => d.geo_type === 'Region');
             const chapters = DATA.filter(d => d.geo_type === 'Chapter');
+            const counties = DATA.filter(d => d.geo_type === 'County');
             const totalRecord = DATA.find(d => d.geo_type === 'Total');
 
             // Get totals from the Total record if available, otherwise sum divisions
@@ -670,9 +675,10 @@
 
             document.getElementById('totalActivities').textContent = totalActivities.toLocaleString();
             document.getElementById('totalIndividuals').textContent = totalIndividuals.toLocaleString();
-            document.getElementById('totalDivisions').textContent = divisions.length;
-            document.getElementById('totalRegions').textContent = regions.length;
+            document.getElementById('totalCounties').textContent = counties.length;
             document.getElementById('totalChapters').textContent = chapters.length;
+            document.getElementById('totalRegions').textContent = regions.length;
+            document.getElementById('totalDivisions').textContent = divisions.length;
         }
 
         function renderWordCloud() {
